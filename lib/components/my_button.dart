@@ -18,13 +18,13 @@ class MyButton extends StatelessWidget {
       ),
       child: Container(
         width: 195,
-        height: 30,
+        height: 20,
         child: Center(
           child: Text(
             'Masuk',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),

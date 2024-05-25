@@ -83,75 +83,55 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(title: Text('Login Page')),
-      // body: Padding(
-      //   padding: const EdgeInsets.all(16.0),
-      //   child: Column(
-      //     children: <Widget>[
-      //       TextField(
-      //         controller: _usernameController,
-      //         decoration: InputDecoration(labelText: 'Username'),
-      //       ),
-      //       TextField(
-      //         controller: _passwordController,
-      //         decoration: InputDecoration(labelText: 'Password'),
-      //         obscureText: true,
-      //       ),
-      //       SizedBox(height: 20),
-      //       ElevatedButton(
-      //         onPressed: _login,
-      //         child: Text('Login'),
-      //       ),
-      //     ],
-      //   ),
-      // ),
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Center(
-          child: Column(
-            children: [
-              // image nexa
-              Image.asset(
-                'lib/images/logonexa.png',
-                width: 300,
-                height: 300,
-              ),
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Center(
+            child: Column(
+              children: [
+                // image nexa
+                Image.asset(
+                  'lib/images/logonexa.png',
+                  width: 300,
+                  height: 300,
+                ),
 
-              // text
-              const Text(
-                'Kesehatan adalah aset berharga',
-                style: TextStyle(color: Colors.grey, fontSize: 15),
-              ),
+                // text
+                const Text(
+                  'Kesehatan adalah aset berharga',
+                  style: TextStyle(color: Colors.grey, fontSize: 15),
+                ),
 
-              const SizedBox(
-                height: 80,
-              ),
+                const SizedBox(
+                  height: 80,
+                ),
 
-              // username textfield
-              MyTextField(
-                controller: usernameController,
-                hintText: 'username',
-                obscureText: false,
-              ),
+                // username textfield
+                MyTextField(
+                  controller: usernameController,
+                  hintText: 'username',
+                  obscureText: false,
+                ),
 
-              const SizedBox(
-                height: 25,
-              ),
+                const SizedBox(
+                  height: 25,
+                ),
 
-              // pw textfield
-              MyTextField(
-                controller: passwordController,
-                hintText: 'password',
-                obscureText: true,
-              ),
+                // pw textfield
+                MyTextField(
+                  controller: passwordController,
+                  hintText: 'password',
+                  obscureText: true,
+                ),
 
-              const SizedBox(
-                height: 100,
-              ),
+                const SizedBox(
+                  height: 100,
+                ),
 
-              //btn login
-              MyButton(onPressed: _login)
-            ],
+                //btn login
+                MyButton(onPressed: _login)
+              ],
+            ),
           ),
         ),
       ),
