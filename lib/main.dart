@@ -11,11 +11,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Nexa Mobile App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: '/login',
+      initialRoute: '/',
       routes: {
         '/': (context) => LoginScreen(),
         '/login': (context) => LoginScreen(),
