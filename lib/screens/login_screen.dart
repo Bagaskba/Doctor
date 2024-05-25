@@ -1,5 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:nexamobile_app/components/my_button.dart';
+import 'package:nexamobile_app/components/text_field.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,8 +13,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final Future<SharedPreferences> prefs = SharedPreferences.getInstance();
 
   Future<void> _login() async {
     try {
@@ -20,8 +25,8 @@ class _LoginScreenState extends State<LoginScreen> {
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode(<String, String>{
-          'username': _usernameController.text,
-          'password': _passwordController.text,
+          'username': usernameController.text,
+          'password': passwordController.text,
         }),
       );
 
@@ -36,43 +41,118 @@ class _LoginScreenState extends State<LoginScreen> {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
 
+        customAlertDialog("Sukses", "Sukses melakukan login", 'success');
         Navigator.pushReplacementNamed(context, '/home');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Login failed')),
         );
+        customAlertDialog('Gagal', 'Gagal melakukan login', 'error');
       }
     } catch (e) {
       print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('An error occurred')),
       );
+      customAlertDialog('Gagal', 'Gagal melakukan login: $e', 'error');
     }
+  }
+
+  // alert
+
+  void customAlertDialog(String title, String message, String type) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Login')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: <Widget>[
-            TextField(
-              controller: _usernameController,
-              decoration: InputDecoration(labelText: 'Username'),
-            ),
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _login,
-              child: Text('Login'),
-            ),
-          ],
+      // appBar: AppBar(title: Text('Login Page')),
+      // body: Padding(
+      //   padding: const EdgeInsets.all(16.0),
+      //   child: Column(
+      //     children: <Widget>[
+      //       TextField(
+      //         controller: _usernameController,
+      //         decoration: InputDecoration(labelText: 'Username'),
+      //       ),
+      //       TextField(
+      //         controller: _passwordController,
+      //         decoration: InputDecoration(labelText: 'Password'),
+      //         obscureText: true,
+      //       ),
+      //       SizedBox(height: 20),
+      //       ElevatedButton(
+      //         onPressed: _login,
+      //         child: Text('Login'),
+      //       ),
+      //     ],
+      //   ),
+      // ),
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            children: [
+              // image nexa
+              Image.asset(
+                'lib/images/logonexa.png',
+                width: 300,
+                height: 300,
+              ),
+
+              // text
+              const Text(
+                'Kesehatan adalah aset berharga',
+                style: TextStyle(color: Colors.grey, fontSize: 15),
+              ),
+
+              const SizedBox(
+                height: 80,
+              ),
+
+              // username textfield
+              MyTextField(
+                controller: usernameController,
+                hintText: 'username',
+                obscureText: false,
+              ),
+
+              const SizedBox(
+                height: 25,
+              ),
+
+              // pw textfield
+              MyTextField(
+                controller: passwordController,
+                hintText: 'password',
+                obscureText: true,
+              ),
+
+              const SizedBox(
+                height: 100,
+              ),
+
+              //btn login
+              MyButton(onPressed: _login)
+            ],
+          ),
         ),
       ),
     );

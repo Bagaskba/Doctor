@@ -9,7 +9,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List _doctors = [];
+  List<dynamic> _doctors = [];
   bool _isLoading = true;
   bool _hasError = false;
 
@@ -24,26 +24,42 @@ class _HomeScreenState extends State<HomeScreen> {
       final token = await _getToken();
 
       if (token == null) {
+        print('Token not available');
         throw Exception('Token is not available'); // Token tidak tersedia
+      } else {
+        print('Token: $token'); // Mencetak token ke terminal
       }
 
       final response = await http.post(
-        Uri.parse('https://nexacaresys.codeplay.id/api/doctor'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token',
+        Uri.parse('https://nexacaresys.codeplay.id/api/nearby'),
+        headers: {
+          'Content-Type': 'application/json',
+          'token': '$token',
+          'Authorization': 'Inherit auth from parent',
         },
       );
 
       print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        setState(() {
-          _doctors = data['response']['data'];
-          _hasError = false;
-        });
+        print('Parsed data: $data'); // Print parsed data for debugging
+
+        final dataResponse = data['response']['dataResponse'];
+
+        if (dataResponse is List) {
+          setState(() {
+            _doctors = dataResponse;
+            _hasError = false;
+          });
+        } else if (dataResponse is Map) {
+          setState(() {
+            _doctors = [dataResponse];
+            _hasError = false;
+          });
+        } else {
+          throw Exception('DataResponse is not a list or a map');
+        }
       } else {
         setState(() {
           _hasError = true;
@@ -90,14 +106,98 @@ class _HomeScreenState extends State<HomeScreen> {
           ? Center(child: CircularProgressIndicator())
           : _hasError
               ? Center(child: Text('Failed to load doctors'))
-              : ListView.builder(
-                  itemCount: _doctors.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(_doctors[index]['nama']),
-                      subtitle: Text(_doctors[index]['jenis']),
-                    );
-                  },
+              : SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: _doctors.length,
+                        itemBuilder: (context, index) {
+                          final doctor = _doctors[index];
+                          return Card(
+                            margin: EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 15),
+                            color: Colors.blue.shade100,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 30,
+                                    backgroundImage: AssetImage(
+                                        'lib/images/logonexa.png'), // Ganti dengan image yang sesuai
+                                  ),
+                                  SizedBox(width: 15),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          doctor['nama'],
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(height: 5),
+                                        Text(
+                                          doctor['jenis'],
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.grey[700],
+                                          ),
+                                        ),
+                                        SizedBox(height: 10),
+                                        Row(
+                                          children: [
+                                            Icon(Icons.calendar_today,
+                                                size: 14,
+                                                color: Colors.grey[700]),
+                                            SizedBox(width: 5),
+                                            Text(
+                                              'Tanggal: ' +
+                                                  (doctor['tanggal'] ?? 'N/A'),
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.grey[700],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: 5),
+                                        Row(
+                                          children: [
+                                            Icon(Icons.access_time,
+                                                size: 14,
+                                                color: Colors.grey[700]),
+                                            SizedBox(width: 5),
+                                            Text(
+                                              'Waktu: ' +
+                                                  (doctor['waktu'] ?? 'N/A'),
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.grey[700],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
       bottomNavigationBar: BottomAppBar(
         child: Container(
