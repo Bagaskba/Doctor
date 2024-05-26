@@ -19,16 +19,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _login() async {
     try {
-      final response = await http.post(
-        Uri.parse('https://nexacaresys.codeplay.id/api/login'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'username': usernameController.text,
-          'password': passwordController.text,
-        }),
-      );
+      final response = await http
+          .post(
+            Uri.parse('https://nexacaresys.codeplay.id/api/login'),
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: jsonEncode(<String, String>{
+              'username': usernameController.text,
+              'password': passwordController.text,
+            }),
+          )
+          .timeout(const Duration(seconds: 10));
 
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
